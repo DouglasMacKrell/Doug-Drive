@@ -13,8 +13,13 @@ function App() {
     <Router>
       <AuthProvider>
         <Switch>
-          <PrivateRoute exact path="/" component={Profile} />
+          {/* DRIVE ROUTES */}
+
+          {/* PROFILE ROUTES */}
+          <PrivateRoute path="/user" component={Profile} />
           <PrivateRoute path="/update-profile" component={UpdateProfile} />
+
+          {/* AUTH ROUTES */}
           <Route path="/signup" component={Signup} />
           <Route path="/login" component={Login} />
           <Route path="/forgot-password" component={ForgotPassword} />
