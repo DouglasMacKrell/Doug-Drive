@@ -1,5 +1,6 @@
 import { useReducer, useEffect } from 'react'
 import { database } from '../firebase'
+import { useAuth } from '../contexts/AuthContext'
 
 const ACTIONS = {
     SELECT_FOLDER: 'select-folder',
@@ -23,6 +24,11 @@ function reducer(state, { type, payload }) {
                 ...state,
                 folder: payload.folder
             }
+        case ACTIONS.SET_CHILD_FOLDERS:
+            return {
+                ...state,
+                childFolders: payload.childFolders
+            }
         default:
             return state
     } 
@@ -35,6 +41,7 @@ export function useFolder(folderId = null, folder = null) {
         childFolders: [],
         childFiles: []
     })
+    const { currentUser } = useAuth()
 
     useEffect(() => {
         dispatch({ type: ACTIONS.SELECT_FOLDER, payload: { folderId, folder } })
@@ -51,9 +58,9 @@ export function useFolder(folderId = null, folder = null) {
         database.folders.doc(folderId).get().then(doc => {
             dispatch({
               type: ACTIONS.UPDATE_FOLDER,
-              payload: { folder: database.formattedDoc(doc) },
+              payload: { folder: database.formatDoc(doc) },
             });
-            console.log(database.formattedDoc(doc))
+            console.log(database.formatDoc(doc))
         }).catch(() => {
             dispatch({
               type: ACTIONS.UPDATE_FOLDER,
@@ -63,9 +70,13 @@ export function useFolder(folderId = null, folder = null) {
     }, [folderId])
 
     useEffect(() => {
-        database.folders.where("parentId", "==", folderId).where("userId", "==", currentUser.uid).orderBy("createdAt").onSnapshot(snapshot => {
+        return database.folders
+        .where("parentId", "==", folderId)
+        .where("userId", "==", currentUser.uid)
+        .orderBy("createdAt")
+        .onSnapshot(snapshot => {
             dispatch({
-                type: ACTION.SET_CHILD_FOLDERS,
+                type: ACTIONS.SET_CHILD_FOLDERS,
                 payload: { childFolders: snapshot.docs.map(database.formatDoc) }
             })
         })
