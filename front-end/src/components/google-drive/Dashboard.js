@@ -6,6 +6,7 @@ import Navbar from './Navbar'
 import AddFolderButton from './AddFolderButton'
 import Folder from './Folder'
 import FolderBreadcrumbs from './FolderBreadcrumbs'
+import AddFileButton from './AddFileButton'
 
 
 export default function Dashboard() {
