@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFileUpload } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-import { storage } from '../../firebase'
+import { database, storage } from '../../firebase'
 import { ROOT_FOLDER } from '../../hooks/useFolder'
 
 export default function AddFileButton({ currentFolder }) {
@@ -27,7 +27,13 @@ export default function AddFileButton({ currentFolder }) {
 
         }, () => {
             uploadTask.snapshot.ref.getDownloadURL().then(url => {
-                console.log(url)
+                database.files.add({
+                    url: url,
+                    name: file.name,
+                    createdAt: database.getCurrentTimestamp(),
+                    folderId: currentFolder.id,
+                    userId: currentUser.uid,
+                })
             })
         })
     }
